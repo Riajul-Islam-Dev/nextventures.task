@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Backend\HomeController;
+use App\Http\Controllers\Backend\RoleController;
+use App\Http\Controllers\Backend\UserController;
+use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Backend\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +19,23 @@ use App\Http\Controllers\PermissionController;
 |
 */
 
+// Public routes
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Authentication routes
 Auth::routes();
 
+// Authenticated routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::resource('roles', RoleController::class);
-    Route::resource('permissions', PermissionController::class);
-    Route::resource('users', UserController::class);
 
-    Route::middleware('role:Admin')->group(function () {});
+    // Admin-only routes
+    Route::middleware('role:Admin')->group(function () {
+        Route::resource('roles', RoleController::class);
+        Route::resource('permissions', PermissionController::class);
+        Route::resource('users', UserController::class);
+        Route::resource('products', ProductController::class);
+    });
 });

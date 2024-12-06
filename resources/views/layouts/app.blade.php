@@ -43,6 +43,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('users.index') }}">Users</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('products.index') }}">Products</a>
+                                </li>
                             @endif
 
                             @if (Auth::user()->can('view dashboard'))
