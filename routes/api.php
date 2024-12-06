@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
 });
+
+
+Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
+    Route::apiResource('products', ProductController::class);
+});
+
+Route::get('products', [ProductController::class, 'index']);

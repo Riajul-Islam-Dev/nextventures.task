@@ -13,7 +13,7 @@ class PermissionController extends Controller
     {
         $this->middleware('role:Admin');
     }
-    
+
     public function index()
     {
         $permissions = Permission::all();
