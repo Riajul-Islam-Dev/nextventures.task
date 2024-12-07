@@ -25,13 +25,13 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
-        $order = $this->orderRepository->createOrder($user, $request->product_id, $request->quantity);
+        $result = $this->orderRepository->createOrder($user, $request->product_id, $request->quantity);
 
-        if ($order) {
-            return response()->json(['message' => 'Order placed successfully!', 'order' => $order], 201);
+        if (is_array($result) && isset($result['error'])) {
+            return response()->json(['message' => $result['error']], 400);
         }
 
-        return response()->json(['message' => 'Failed to place order.'], 400);
+        return response()->json(['message' => 'Order placed successfully!', 'order' => $result], 201);
     }
 
     public function fetchUserOrders()
