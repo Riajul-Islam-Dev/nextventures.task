@@ -6,7 +6,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Repositories\OrderRepository;
+use App\Repositories\API\OrderRepository;
 
 class OrderController extends Controller
 {

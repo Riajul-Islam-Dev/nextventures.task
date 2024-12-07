@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\HomeController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\UserController;
+use App\Http\Controllers\Backend\OrdersController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\PermissionController;
 
@@ -35,5 +36,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('permissions', PermissionController::class);
         Route::resource('users', UserController::class);
         Route::resource('products', ProductController::class);
+        Route::resource('orders', OrdersController::class);
     });
 });

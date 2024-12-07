@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\API;
 
 use App\Models\Order;
 use App\Models\Product;
