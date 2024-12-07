@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Products</h2>
         <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Create Product</a>
-        <table class="table table-striped">
+        <table class="table table-striped" id="products-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -15,25 +15,45 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach ($products as $product)
-                    <tr>
-                        <td>{{ $product->id }}</td>
-                        <td>{{ $product->name }}</td>
-                        <td>{{ $product->description }}</td>
-                        <td>{{ number_format($product->price, 2) }} BDT</td>
-                        <td>{{ $product->stock }}</td>
-                        <td>
-                            <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
         </table>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#products-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('products.index') }}",
+                columns: [{
+                        data: 'id',
+                        name: 'id'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'description',
+                        name: 'description'
+                    },
+                    {
+                        data: 'price',
+                        name: 'price'
+                    },
+                    {
+                        data: 'stock',
+                        name: 'stock'
+                    },
+                    {
+                        data: 'actions',
+                        name: 'actions',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+        });
+    </script>
+@endpush

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
@@ -16,10 +17,29 @@ class ProductController extends Controller
     /**
      * Display a listing of the products.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
-        return view('products.index', compact('products'));
+        if ($request->ajax()) {
+            $products = Product::select(['id', 'name', 'description', 'price', 'stock', 'created_at']);
+            return datatables()
+                ->of($products)
+                ->addColumn('actions', function ($row) {
+                    $editUrl = route('products.edit', $row->id);
+                    $deleteUrl = route('products.destroy', $row->id);
+                    return '
+                    <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="' . $deleteUrl . '" method="POST" style="display:inline-block;">
+                        ' . csrf_field() . '
+                        ' . method_field('DELETE') . '
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                ';
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('products.index');
     }
 
     /**
