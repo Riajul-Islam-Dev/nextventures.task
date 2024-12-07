@@ -37,10 +37,14 @@ class OrdersController extends Controller
                 ->addColumn('actions', function ($row) {
                     $editUrl = route('orders.edit', $row->id);
                     $deleteUrl = route('orders.destroy', $row->id);
+
+                    $deleteButton = $row->status != 1 ? '
+                    <button type="button" class="btn btn-danger btn-sm delete-order" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
+                    ' : '';
+
                     return '
                     <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
-                    <button type="button" class="btn btn-danger btn-sm delete-order" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
-                    ';
+                    ' . $deleteButton;
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
