@@ -35,12 +35,10 @@
                 <input type="password" name="password" class="form-control">
                 <small class="text-muted">Leave empty to keep the current password.</small>
             </div>
-            @if (!isset($user) || old('password'))
-                <div class="mb-3">
-                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                    <input type="password" name="password_confirmation" class="form-control">
-                </div>
-            @endif
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Confirm Password</label>
+                <input type="password" name="password_confirmation" class="form-control">
+            </div>
             <div class="mb-3">
                 <label for="roles" class="form-label">Roles</label>
                 <select name="roles[]" id="roles" class="form-select" multiple>

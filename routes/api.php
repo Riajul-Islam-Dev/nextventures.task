@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
 
 /*
@@ -28,8 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
 
-    // Public product listing for authenticated users
     Route::get('/products-list', [ProductController::class, 'productsList']);
+
+    Route::post('/orders', [OrderController::class, 'placeOrder']);
+    Route::get('/orders', [OrderController::class, 'fetchUserOrders']);
 });
 
 // Admin-only routes
