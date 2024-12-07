@@ -16,7 +16,6 @@ use App\Http\Controllers\API\ProductController;
 |
 */
 
-// Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

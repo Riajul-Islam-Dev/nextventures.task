@@ -19,12 +19,10 @@ use App\Http\Controllers\Backend\PermissionController;
 |
 */
 
-// Public routes
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Authentication routes
 Auth::routes();
 
 // Authenticated routes

@@ -28,12 +28,8 @@ class ProductController extends Controller
                     $deleteUrl = route('products.destroy', $row->id);
                     return '
                     <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="' . $deleteUrl . '" method="POST" style="display:inline-block;">
-                        ' . csrf_field() . '
-                        ' . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                ';
+                    <button type="button" class="btn btn-danger btn-sm delete-product" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
+                    ';
                 })
                 ->rawColumns(['actions'])
                 ->make(true);

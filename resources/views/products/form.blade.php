@@ -10,7 +10,6 @@
                 @method('PUT')
             @endif
 
-            <!-- Display validation errors -->
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>

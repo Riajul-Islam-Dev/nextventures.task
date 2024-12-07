@@ -22,7 +22,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#products-table').DataTable({
+            const table = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('products.index') }}",
@@ -53,6 +53,53 @@
                         searchable: false
                     }
                 ]
+            });
+
+            $(document).on('click', '.delete-product', function() {
+                let productId = $(this).data('id');
+                let deleteUrl = $(this).data('url');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: deleteUrl,
+                            type: 'POST',
+                            data: {
+                                _method: 'DELETE',
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message ||
+                                    'The product has been deleted.',
+                                    'success'
+                                );
+                                toastr.success(response.message ||
+                                    'Product deleted successfully!');
+                                table.ajax.reload();
+                            },
+                            error: function(xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    xhr.responseJSON?.message ||
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                                toastr.error(xhr.responseJSON?.message ||
+                                    'Failed to delete product.');
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>
