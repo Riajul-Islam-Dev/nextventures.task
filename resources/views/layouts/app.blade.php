@@ -15,6 +15,9 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -42,6 +45,9 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('users.index') }}">Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('products.index') }}">Products</a>
                                 </li>
                             @endif
 
@@ -96,6 +102,22 @@
             @yield('content')
         </main>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: 5000,
+        };
+    </script>
+
+    @stack('scripts')
 </body>
 
 </html>
