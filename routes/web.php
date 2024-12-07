@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\Backend\HomeController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\UserController;
@@ -30,12 +31,15 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+    Route::resource('orders', OrdersController::class)->only(['index']);
+    Route::get('orders/{order}/checkout', [OrdersController::class, 'checkout'])->name('orders.checkout');
+
     // Admin-only routes
     Route::middleware('role:Admin')->group(function () {
+        Route::resource('orders', OrdersController::class)->except(['index']);
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
         Route::resource('users', UserController::class);
         Route::resource('products', ProductController::class);
-        Route::resource('orders', OrdersController::class);
     });
 });

@@ -54,6 +54,15 @@
                                 </li>
                             @endif
 
+                            @if (Auth::user()->hasRole('User'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('products.index') }}">Products</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('orders.index') }}">Orders</a>
+                                </li>
+                            @endif
+
                             @if (Auth::user()->can('view dashboard'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('home') }}">Dashboard</a>
