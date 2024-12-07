@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\Backend\OrderRepository;
 
@@ -16,15 +17,29 @@ class OrdersController extends Controller
 
     public function __construct(OrderRepository $orderRepository)
     {
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin')->except('index', 'checkout');
         $this->orderRepository = $orderRepository;
     }
 
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         if ($request->ajax()) {
-            $orders = Order::with(['user:id,name', 'product:id,name'])
-                ->select(['id', 'user_id', 'product_id', 'quantity', 'total_price', 'status', 'created_at']);
+            if ($user->hasRole('Admin')) {
+                $orders = Order::with(['user:id,name', 'product:id,name'])
+                    ->select(['id', 'user_id', 'product_id', 'quantity', 'total_price', 'status', 'created_at'])
+                    ->latest()
+                    ->get();
+            } elseif ($user->hasRole('User')) {
+                $orders = Order::with(['user:id,name', 'product:id,name'])
+                    ->select(['id', 'user_id', 'product_id', 'quantity', 'total_price', 'status', 'created_at'])
+                    ->where('user_id', $user->id)
+                    ->latest()
+                    ->get();
+            } else {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
 
             return datatables()
                 ->of($orders)
@@ -34,17 +49,25 @@ class OrdersController extends Controller
                 ->addColumn('product_name', function ($row) {
                     return $row->product->name ?? 'N/A';
                 })
-                ->addColumn('actions', function ($row) {
-                    $editUrl = route('orders.edit', $row->id);
-                    $deleteUrl = route('orders.destroy', $row->id);
+                ->addColumn('actions', function ($row) use ($user) {
+                    if ($user->hasRole('Admin')) {
+                        $editUrl = route('orders.edit', $row->id);
+                        $deleteUrl = route('orders.destroy', $row->id);
 
-                    $deleteButton = $row->status != 1 ? '
-                    <button type="button" class="btn btn-danger btn-sm delete-order" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
+                        $deleteButton = $row->status != 1 ? '
+                        <button type="button" class="btn btn-danger btn-sm delete-order" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
                     ' : '';
 
-                    return '
-                    <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
-                    ' . $deleteButton;
+                        return '
+                        <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
+                        ' . $deleteButton;
+                    } elseif ($user->hasRole('User')) {
+                        if ($row->status == 0) {
+                            $checkoutUrl = route('orders.checkout', $row->id);
+                            return '<a href="' . $checkoutUrl . '" class="btn btn-success btn-sm">Checkout</a>';
+                        }
+                    }
+                    return ''; // No actions for other cases
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
@@ -119,5 +142,12 @@ class OrdersController extends Controller
         }
 
         return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
+    }
+
+    public function checkout($orderId)
+    {
+        $order = Order::with(['user', 'product'])->findOrFail($orderId);
+
+        return view('orders.checkout', compact('order'));
     }
 }

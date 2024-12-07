@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h2>Orders</h2>
-        <a href="{{ route('orders.create') }}" class="btn btn-primary mb-3">Create Order</a>
+        {{-- <a href="{{ route('orders.create') }}" class="btn btn-primary mb-3">Create Order</a> --}}
         <table class="table table-striped" id="orders-table">
             <thead>
                 <tr>

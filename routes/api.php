@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\ProductController;
 
 /*
@@ -34,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'placeOrder']);
     Route::get('/orders', [OrderController::class, 'fetchUserOrders']);
 });
+Route::post('/pay', [PaymentController::class, 'pay']);
+Route::get('/payment-success', [PaymentController::class, 'paymentSuccess']);
+Route::get('/payment-failure', [PaymentController::class, 'paymentFailure']);
 
 // Admin-only routes
 Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
