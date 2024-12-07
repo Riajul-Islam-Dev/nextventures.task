@@ -35,9 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'placeOrder']);
     Route::get('/orders', [OrderController::class, 'fetchUserOrders']);
 });
+
 Route::post('/pay', [PaymentController::class, 'pay']);
-Route::get('/payment-success', [PaymentController::class, 'paymentSuccess']);
-Route::get('/payment-failure', [PaymentController::class, 'paymentFailure']);
+Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment-failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
 
 // Admin-only routes
 Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {

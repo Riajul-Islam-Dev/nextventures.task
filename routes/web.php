@@ -31,10 +31,6 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    Route::post('/pay', [PaymentController::class, 'pay']);
-    Route::get('/payment-success', [PaymentController::class, 'paymentSuccess']);
-    Route::get('/payment-failure', [PaymentController::class, 'paymentFailure']);
-
     Route::resource('orders', OrdersController::class)->only(['index']);
     Route::get('orders/{order}/checkout', [OrdersController::class, 'checkout'])->name('orders.checkout');
 

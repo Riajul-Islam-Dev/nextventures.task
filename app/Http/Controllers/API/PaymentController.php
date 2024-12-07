@@ -20,6 +20,12 @@ class PaymentController extends Controller
 
         $order = Order::with('product')->findOrFail($request->order_id);
 
+        $payment = Payment::create([
+            'product_name' => $order->product->name,
+            'amount' => $order->product->price * 100,
+            'status' => 0,
+        ]);
+
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
@@ -31,15 +37,13 @@ class PaymentController extends Controller
                         'product_data' => [
                             'name' => $order->product->name,
                         ],
-                        // 'unit_amount' => $order->product->price * 100,
-                        'unit_amount' => 5000,
+                        'unit_amount' => $order->product->price * 100,
                     ],
-                    // 'quantity' => $order->quantity,
-                    'quantity' => 1,
+                    'quantity' => $order->quantity,
                 ]],
                 'mode' => 'payment',
-                'success_url' => url('/payment-success'),
-                'cancel_url' => url('/payment-failure'),
+                'success_url' => url('/api/payment-success?order_id=' . $order->id . '&payment_id=' . $payment->id),
+                'cancel_url' => url('/api/payment-failure?order_id=' . $order->id . '&payment_id=' . $payment->id),
             ]);
 
             return response()->json(['sessionId' => $session->id], 200);
@@ -49,13 +53,41 @@ class PaymentController extends Controller
         }
     }
 
-    public function paymentSuccess()
+    public function paymentSuccess(Request $request)
     {
-        return response()->json(['message' => 'Payment was successful. Thank you for your purchase!'], 200);
+        $orderId = $request->query('order_id');
+        $paymentId = $request->query('payment_id');
+
+        $order = Order::find($orderId);
+        $payment = Payment::find($paymentId);
+
+        if (!$order || !$payment) {
+            return response()->json(['error' => 'Order or payment not found'], 404);
+        }
+
+        $order->status = 1;
+        $payment->status = 1;
+
+        $order->save();
+        $payment->save();
+
+        return response()->json(['message' => 'Payment successful and status updated'], 200);
     }
 
-    public function paymentFailure()
+    public function paymentFailure(Request $request)
     {
+        $paymentId = $request->query('payment_id');
+
+        $payment = Payment::find($paymentId);
+
+        if (!$payment) {
+            return response()->json(['error' => 'Order or payment not found'], 404);
+        }
+
+        $payment->status = 2;
+
+        $payment->save();
+
         return response()->json(['message' => 'Payment failed. Please try again later.'], 500);
     }
 }
