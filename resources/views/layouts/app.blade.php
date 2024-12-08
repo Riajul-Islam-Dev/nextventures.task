@@ -56,7 +56,7 @@
 
                             @if (Auth::user()->hasRole('User'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('products.index') }}">Products</a>
+                                    <a class="nav-link" href="{{ route('products.list') }}">Products</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('orders.index') }}">Orders</a>

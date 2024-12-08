@@ -31,6 +31,8 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+    Route::get('/products-list', [ProductController::class, 'productsList'])->name('products.list');
+
     Route::resource('orders', OrdersController::class)->only(['index']);
     Route::get('orders/{order}/checkout', [OrdersController::class, 'checkout'])->name('orders.checkout');
 

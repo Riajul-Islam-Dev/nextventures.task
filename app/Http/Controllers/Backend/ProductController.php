@@ -14,7 +14,7 @@ class ProductController extends Controller
 
     public function __construct(ProductRepository $productRepository)
     {
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin')->except('index', 'productsList');
         $this->productRepository = $productRepository;
     }
 
@@ -37,6 +37,29 @@ class ProductController extends Controller
         }
 
         return view('products.index');
+    }
+
+    public function productsList(Request $request)
+    {
+        if ($request->ajax()) {
+            $products = $this->productRepository->getAllProducts();
+            return datatables()
+                ->of($products)
+                ->addColumn('actions', function ($row) {
+                    return '';
+
+                    $editUrl = route('products.edit', $row->id);
+                    $deleteUrl = route('products.destroy', $row->id);
+                    return '
+                    <a href="' . $editUrl . '" class="btn btn-warning btn-sm">Edit</a>
+                    <button type="button" class="btn btn-danger btn-sm delete-product" data-id="' . $row->id . '" data-url="' . $deleteUrl . '">Delete</button>
+                    ';
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('products.index_api');
     }
 
     public function create()

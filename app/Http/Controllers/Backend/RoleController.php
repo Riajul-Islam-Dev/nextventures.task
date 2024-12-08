@@ -67,8 +67,13 @@ class RoleController extends Controller
         ]);
 
         $this->roleRepository->update($id, ['name' => $request->name]);
+
         if ($request->has('permissions')) {
-            $this->roleRepository->syncPermissions($id, $request->permissions);
+            $permissions = \Spatie\Permission\Models\Permission::whereIn('id', $request->permissions)
+                ->pluck('name')
+                ->toArray();
+
+            $this->roleRepository->syncPermissions($id, $permissions);
         }
 
         return redirect()->route('roles.index')->with('success', 'Role updated successfully.');

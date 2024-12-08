@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
 
-    Route::get('/products-list', [ProductController::class, 'productsList']);
+    // Route::get('/products-list', [ProductController::class, 'productsList'])->name('products.list');
 
     Route::post('/orders', [OrderController::class, 'placeOrder']);
     Route::get('/orders', [OrderController::class, 'fetchUserOrders']);
