@@ -43,9 +43,11 @@ class PaymentController extends Controller
                         'product_data' => [
                             'name' => $order->product->name,
                         ],
-                        'unit_amount' => $order->product->price * 100,
+                        'unit_amount' => 5000,
+                        // 'unit_amount' => $order->product->price * 100,
                     ],
-                    'quantity' => $order->quantity,
+                    'quantity' => 1,
+                    // 'quantity' => $order->quantity,
                 ]],
                 'mode' => 'payment',
                 'success_url' => url('/api/payment-success?order_id=' . $order->id . '&payment_id=' . $payment->id),
