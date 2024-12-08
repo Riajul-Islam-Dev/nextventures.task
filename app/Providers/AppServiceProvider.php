@@ -7,6 +7,7 @@ use App\Repositories\API\PaymentRepository;
 use App\Repositories\Backend\RoleRepository;
 use App\Repositories\Backend\UserRepository;
 use App\Repositories\Backend\OrderRepository;
+use App\Repositories\Backend\ProductRepository;
 use App\Repositories\Backend\PermissionRepository;
 use App\Repositories\API\PaymentRepositoryInterface;
 use App\Repositories\Backend\RoleRepositoryInterface;
@@ -27,9 +28,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
-        $this->app->bind(\App\Repositories\Backend\ProductRepository::class, \App\Repositories\Backend\ProductRepository::class); //Backend
-        $this->app->bind(\App\Repositories\API\ProductRepository::class, \App\Repositories\API\ProductRepository::class); //API
+        $this->app->bind(ProductRepository::class, ProductRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);
+        $this->app->bind(\App\Repositories\API\ProductRepository::class, \App\Repositories\API\ProductRepository::class);
+        $this->app->bind(\App\Repositories\API\OrderRepositoryInterface::class, \App\Repositories\API\OrderRepository::class);
     }
 
     /**
