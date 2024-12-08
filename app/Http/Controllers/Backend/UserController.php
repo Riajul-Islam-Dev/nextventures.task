@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use App\Repositories\Backend\UserRepositoryInterface;
+use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
 {
-    public function __construct()
+    protected $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->middleware('role:Admin');
+        $this->userRepository = $userRepository;
     }
 
     public function index()
     {
-        $users = User::all();
+        $users = $this->userRepository->all();
         return view('users.index', compact('users'));
     }
 
@@ -37,25 +40,15 @@ class UserController extends Controller
             'roles.*' => 'exists:roles,id',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        if ($request->has('roles')) {
-            $roles = Role::whereIn('id', $request->roles)->pluck('name')->toArray();
-            $user->syncRoles($roles);
-        }
+        $this->userRepository->create($request->only(['name', 'email', 'password', 'roles']));
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     public function edit($id)
     {
-        try {
-            $user = User::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
+        $user = $this->userRepository->findById($id);
+        if (!$user) {
             return redirect()->route('users.index')->with('error', 'User not found.');
         }
 
@@ -73,31 +66,24 @@ class UserController extends Controller
             'roles.*' => 'exists:roles,id',
         ]);
 
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
-        }
-
-        $user->save();
-
-        if ($request->has('roles')) {
-            $roles = Role::whereIn('id', $request->roles)->pluck('name')->toArray();
-            $user->syncRoles($roles);
-        }
+        $this->userRepository->update($id, $request->only(['name', 'email', 'password', 'roles']));
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        if ($user->email === 'admin@example.com') { // Adjust condition as needed
+        $user = $this->userRepository->findById($id);
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'User not found.');
+        }
+
+        if ($user->email === 'admin@example.com') { // Admin integrity
             return redirect()->route('users.index')->with('error', 'The admin user cannot be deleted.');
         }
 
-        $user->delete();
+        $this->userRepository->delete($id);
+
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }
