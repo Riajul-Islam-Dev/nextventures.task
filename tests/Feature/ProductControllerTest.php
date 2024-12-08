@@ -115,4 +115,6 @@ class ProductControllerTest extends TestCase
                 'message' => 'Unauthenticated.',
             ]);
     }
+
+    // To run test please use this command : php artisan test --filter ProductControllerTest
 }
