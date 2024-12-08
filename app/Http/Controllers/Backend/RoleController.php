@@ -3,21 +3,24 @@
 namespace App\Http\Controllers\Backend;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Permission;
+use App\Repositories\Backend\RoleRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RoleController extends Controller
 {
-    public function __construct()
+    protected $roleRepository;
+
+    public function __construct(RoleRepositoryInterface $roleRepository)
     {
         $this->middleware('role:Admin');
+        $this->roleRepository = $roleRepository;
     }
 
     public function index()
     {
-        $roles = Role::all();
+        $roles = $this->roleRepository->all();
         return view('roles.index', compact('roles'));
     }
 
@@ -35,9 +38,9 @@ class RoleController extends Controller
             'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role = Role::create(['name' => $request->name]);
+        $role = $this->roleRepository->create(['name' => $request->name]);
         if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
+            $this->roleRepository->syncPermissions($role->id, $request->permissions);
         }
 
         return redirect()->route('roles.index')->with('success', 'Role created successfully.');
@@ -46,7 +49,7 @@ class RoleController extends Controller
     public function edit($id)
     {
         try {
-            $role = Role::findOrFail($id);
+            $role = $this->roleRepository->findById($id);
         } catch (ModelNotFoundException $e) {
             return redirect()->route('roles.index')->with('error', 'Role not found.');
         }
@@ -63,28 +66,32 @@ class RoleController extends Controller
             'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role = Role::findOrFail($id);
-        $role->name = $request->name;
-        $role->save();
-
+        $this->roleRepository->update($id, ['name' => $request->name]);
         if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
+            $this->roleRepository->syncPermissions($id, $request->permissions);
         }
 
         return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
     }
 
-    public function destroy(Role $role)
+    public function destroy($id)
     {
-        if ($role->name === 'Admin') {
-            return redirect()->route('roles.index')->with('error', 'The Admin role cannot be deleted.');
-        }
+        try {
+            $role = $this->roleRepository->findById($id);
 
-        if ($role->users()->exists()) {
-            return redirect()->route('roles.index')->with('error', 'Role cannot be deleted as it is assigned to users.');
-        }
+            if ($role->name === 'Admin') {
+                return redirect()->route('roles.index')->with('error', 'The Admin role cannot be deleted.');
+            }
 
-        $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
+            if ($role->users()->exists()) {
+                return redirect()->route('roles.index')->with('error', 'Role cannot be deleted as it is assigned to users.');
+            }
+
+            $this->roleRepository->delete($id);
+
+            return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('roles.index')->with('error', 'Role not found.');
+        }
     }
 }

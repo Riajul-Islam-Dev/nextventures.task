@@ -5,12 +5,20 @@ namespace App\Http\Controllers\API;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Repositories\API\ProductRepository;
 
 class ProductController extends Controller
 {
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     public function index()
     {
-        return response()->json(Product::all());
+        return response()->json($this->productRepository->getAllProducts());
     }
 
     public function store(Request $request)
@@ -22,7 +30,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        $product = Product::create($validated);
+        $product = $this->productRepository->createProduct($validated);
 
         return response()->json($product, 201);
     }
@@ -41,14 +49,22 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        $product->update($validated);
+        $updated = $this->productRepository->updateProduct($product, $validated);
+
+        if (!$updated) {
+            return response()->json(['message' => 'Product update failed.'], 500);
+        }
 
         return response()->json($product);
     }
 
     public function destroy(Product $product)
     {
-        $product->delete();
+        $deleted = $this->productRepository->deleteProduct($product);
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Product deletion failed.'], 500);
+        }
 
         return response()->json(['message' => 'Product deleted successfully.']);
     }

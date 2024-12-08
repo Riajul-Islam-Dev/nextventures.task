@@ -5,22 +5,23 @@ namespace App\Http\Controllers\Backend;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Repositories\Backend\ProductRepository;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
-    public function __construct()
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
     {
         $this->middleware('role:Admin');
+        $this->productRepository = $productRepository;
     }
 
-    /**
-     * Display a listing of the products.
-     */
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $products = Product::select(['id', 'name', 'description', 'price', 'stock', 'created_at']);
+            $products = $this->productRepository->getAllProducts();
             return datatables()
                 ->of($products)
                 ->addColumn('actions', function ($row) {
@@ -38,17 +39,11 @@ class ProductController extends Controller
         return view('products.index');
     }
 
-    /**
-     * Show the form for creating a new product.
-     */
     public function create()
     {
         return view('products.form');
     }
 
-    /**
-     * Store a newly created product in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -58,23 +53,21 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        Product::create($request->all());
+        $this->productRepository->createProduct($request->all());
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
-    /**
-     * Show the form for editing the specified product.
-     */
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->findProductById($id);
+        if (!$product) {
+            return redirect()->route('products.index')->with('error', 'Product not found.');
+        }
+
         return view('products.form', compact('product'));
     }
 
-    /**
-     * Update the specified product in storage.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -84,19 +77,22 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $updated = $this->productRepository->updateProduct($id, $request->all());
+
+        if (!$updated) {
+            return redirect()->route('products.index')->with('error', 'Product update failed.');
+        }
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
-    /**
-     * Remove the specified product from storage.
-     */
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        $deleted = $this->productRepository->deleteProduct($id);
+
+        if (!$deleted) {
+            return redirect()->route('products.index')->with('error', 'Product deletion failed.');
+        }
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }

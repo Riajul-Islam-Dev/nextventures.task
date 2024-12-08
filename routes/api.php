@@ -41,6 +41,6 @@ Route::get('/payment-success', [PaymentController::class, 'paymentSuccess'])->na
 Route::get('/payment-failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
 
 // Admin-only routes
-Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:User'])->group(function () {
     Route::apiResource('products', ProductController::class);
 });

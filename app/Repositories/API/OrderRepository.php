@@ -5,7 +5,7 @@ namespace App\Repositories\API;
 use App\Models\Order;
 use App\Models\Product;
 
-class OrderRepository
+class OrderRepository implements OrderRepositoryInterface
 {
     public function createOrder($user, $productId, $quantity)
     {
