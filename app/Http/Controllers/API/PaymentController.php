@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use Stripe\Charge;
 use Stripe\Stripe;
+use Stripe\Checkout\Session;
 use App\Models\Order;
-use App\Models\Payment;
-use App\Models\Product;
+use App\Repositories\API\PaymentRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {
+    protected $paymentRepository;
+
+    public function __construct(PaymentRepositoryInterface $paymentRepository)
+    {
+        $this->paymentRepository = $paymentRepository;
+    }
+
     public function pay(Request $request)
     {
         $request->validate([
@@ -20,7 +26,7 @@ class PaymentController extends Controller
 
         $order = Order::with('product')->findOrFail($request->order_id);
 
-        $payment = Payment::create([
+        $payment = $this->paymentRepository->createPayment([
             'product_name' => $order->product->name,
             'amount' => $order->product->price * 100,
             'status' => 0,
@@ -29,7 +35,7 @@ class PaymentController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            $session = \Stripe\Checkout\Session::create([
+            $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
@@ -59,7 +65,7 @@ class PaymentController extends Controller
         $paymentId = $request->query('payment_id');
 
         $order = Order::find($orderId);
-        $payment = Payment::find($paymentId);
+        $payment = $this->paymentRepository->findPaymentById($paymentId);
 
         if (!$order || !$payment) {
             return response()->json(['error' => 'Order or payment not found'], 404);
@@ -78,15 +84,13 @@ class PaymentController extends Controller
     {
         $paymentId = $request->query('payment_id');
 
-        $payment = Payment::find($paymentId);
+        $payment = $this->paymentRepository->findPaymentById($paymentId);
 
         if (!$payment) {
-            return response()->json(['error' => 'Order or payment not found'], 404);
+            return response()->json(['error' => 'Payment not found'], 404);
         }
 
-        $payment->status = 2;
-
-        $payment->save();
+        $this->paymentRepository->updatePaymentStatus($paymentId, 2);
 
         return response()->json(['message' => 'Payment failed. Please try again later.'], 500);
     }
