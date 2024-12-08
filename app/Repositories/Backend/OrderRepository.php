@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
-class OrderRepository
+class OrderRepository implements OrderRepositoryInterface
 {
     public function getAllOrders()
     {

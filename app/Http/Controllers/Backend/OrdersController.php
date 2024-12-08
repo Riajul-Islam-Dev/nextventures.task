@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Models\User;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\Backend\OrderRepository;
+use App\Repositories\Backend\OrderRepositoryInterface;
 
 class OrdersController extends Controller
 {
     private $orderRepository;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepositoryInterface $orderRepository)
     {
         $this->middleware('role:Admin')->except('index', 'checkout');
         $this->orderRepository = $orderRepository;
@@ -67,7 +67,7 @@ class OrdersController extends Controller
                             return '<a href="' . $checkoutUrl . '" class="btn btn-success btn-sm">Checkout</a>';
                         }
                     }
-                    return ''; // No actions for other cases
+                    return '';
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
