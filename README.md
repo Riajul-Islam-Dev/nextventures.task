@@ -146,7 +146,8 @@ php artisan test
 ## About Me
 
 **Riajul Islam**
-🌍 [riajul.islam.softkit.io](https://riajul.islam.softkit.io/)
-✉️ [riajul.islam.dev@gmail.com](mailto:riajul.islam.dev@gmail.com)  
-🔗 [LinkedIn Profile](https://linkedin.com/in/riajul-islam-dev/)
-📞 [WhatsApp: +8801722787007](https://wa.me/8801722787007)
+
+-   🌍 [riajul.islam.softkit.io](https://riajul.islam.softkit.io/)
+-   ✉️ [riajul.islam.dev@gmail.com](mailto:riajul.islam.dev@gmail.com)
+-   🔗 [LinkedIn Profile](https://linkedin.com/in/riajul-islam-dev/)
+-   📞 [WhatsApp: +8801722787007](https://wa.me/8801722787007)
