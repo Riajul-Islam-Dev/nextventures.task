@@ -58,7 +58,7 @@ It includes the following core features:
 1.  **Clone the repository**:
 
     ```bash
-    git clone https://github.com/yourusername/nextventures.task.git
+    git clone https://github.com/Riajul-Islam-Dev/nextventures.task.git
     cd nextventures.task
 
     ```
@@ -135,6 +135,30 @@ It includes the following core features:
 php artisan test
 
 ```
+
+### Login Credentials:
+
+```bash
+Admin Login:
+Email: admin@example.com
+Password: password123
+
+User Login:
+Email: user@example.com
+Password: password123
+```
+
+Admin users log in with a role as **Admin users**. They have the following permissions:
+
+-   CRUD permissions for **Roles**, **Permissions**, and **Users**.
+-   CRUD permissions for **Products** and **Orders** menus.
+    -   Admins can create, edit, and delete products.
+    -   Admins can edit and delete orders with a status of "pending."
+
+Regular users have the following features:
+
+-   Place orders.
+-   Access the **Orders** menu to proceed to checkout using the **Stripe Payment Gateway**.
 
 ## Additional Information
 
