@@ -90,8 +90,8 @@ It includes the following core features:
     DB_CONNECTION=mysql
     DB_HOST=127.0.0.1
     DB_PORT=3306
-    DB_DATABASE=your_database
-    DB_USERNAME=your_username
+    DB_DATABASE=nextventures_task
+    DB_USERNAME=root
     DB_PASSWORD=your_password
 
     ```
@@ -99,8 +99,8 @@ It includes the following core features:
 6.  **Set up Stripe keys** in `.env`:
 
     ```ini
-    STRIPE_SECRET=your_secret_key
-    STRIPE_PUBLIC=your_public_key
+    STRIPE_KEY=pk_test_51QTRrlEDrnuDpkjHszgQwbtfHVutYtw3WC3v8TwOAVZAzI093y2I6fk9rMPfqc6JFRe1d44Ico3Q4D3eQgCjn58v00xVMPGlwZ
+    STRIPE_SECRET=sk_test_51QTRrlEDrnuDpkjHADRUHyTltMD6qXm3VHf6KVfQnzCwqfEgQvg6wuAhwT8Jrmjjw3ekrkKbCxC0Y0NDP8xYu7nl00xYr9D0jq
 
     ```
 
